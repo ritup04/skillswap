@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { 
-  Edit, 
-  X, 
-  Plus, 
-  MapPin, 
-  Clock, 
-  Star
-} from 'lucide-react';
+import { Edit, X, MapPin, Clock, Star, User, LogOut } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
+
+const sidebarLinks = [
+  { label: 'Profile', icon: <User className="w-5 h-5" /> },
+  { label: 'My Skills', icon: <Star className="w-5 h-5" /> },
+  { label: 'Availability', icon: <Clock className="w-5 h-5" /> },
+  { label: 'Settings', icon: <Edit className="w-5 h-5" /> },
+  { label: 'Logout', icon: <LogOut className="w-5 h-5" /> },
+];
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -142,376 +143,100 @@ const Profile = () => {
   }
 
   return (
-    <div className="main-card mt-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary-600 mb-2">My Profile</h1>
-        <p className="text-neutral-500">Manage your profile, skills, and availability</p>
-      </div>
-
-      {/* Profile Header */}
-      <div className="card mb-8">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen flex bg-gradient-to-br from-purple-100 via-indigo-100 to-white">
+      {/* Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-purple-600 to-indigo-600 text-white py-8 px-6 rounded-tr-3xl rounded-br-3xl shadow-xl mr-8">
+        <div className="flex flex-col items-center mb-10">
+          {user.profilePhoto ? (
+            <img src={user.profilePhoto} alt={user.name} className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg mb-3" />
+          ) : (
+            <div className="w-20 h-20 bg-purple-300 rounded-full flex items-center justify-center mb-3">
+              <span className="text-white font-bold text-3xl">{user.name.charAt(0).toUpperCase()}</span>
+            </div>
+          )}
+          <div className="text-lg font-semibold mt-2">{user.name}</div>
+          <div className="text-purple-200 text-xs">{user.email}</div>
+        </div>
+        <nav className="flex-1 space-y-2">
+          {sidebarLinks.map((link, idx) => (
+            <button key={link.label} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${idx === 0 ? 'bg-white/20 text-white font-bold' : 'hover:bg-white/10 text-purple-100'}`}>{link.icon}<span>{link.label}</span></button>
+          ))}
+        </nav>
+        <div className="mt-auto flex items-center justify-center pt-8">
+          <img src="/logo192.png" alt="Logo" className="w-16 h-16" />
+        </div>
+      </aside>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col gap-8 py-10 px-2 md:px-0">
+        {/* Profile Info Card */}
+        <div className="w-full max-w-3xl mx-auto bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-purple-100 p-8 flex flex-col md:flex-row items-center gap-8 animate-fade-in">
+          <div className="flex-shrink-0">
             {user.profilePhoto ? (
-              <img
-                src={user.profilePhoto}
-                alt={user.name}
-                className="w-20 h-20 rounded-full object-cover"
-              />
+              <img src={user.profilePhoto} alt={user.name} className="w-28 h-28 rounded-full object-cover border-4 border-purple-200 shadow-md" />
             ) : (
-              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-gray-500 font-semibold text-2xl">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
+              <div className="w-28 h-28 bg-purple-200 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-4xl">{user.name.charAt(0).toUpperCase()}</span>
               </div>
             )}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
-              {user.location && (
-                <p className="text-gray-600 flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {user.location}
-                </p>
-              )}
-              {user.rating.count > 0 && (
-                <div className="flex items-center mt-1">
-                  <div className="flex items-center mr-2">
-                    {renderStars(user.rating.average)}
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    ({user.rating.count} reviews)
-                  </span>
-                </div>
-              )}
+          </div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-purple-800 mb-1">{user.name}</h2>
+            <div className="text-purple-500 mb-2">{user.location}</div>
+            <div className="flex items-center gap-2 mb-2">
+              {renderStars(user.rating.average)}
+              <span className="text-sm text-purple-400">({user.rating.count} reviews)</span>
+            </div>
+            <div className="text-sm text-purple-700 mb-2">{user.bio}</div>
+            <div className="flex items-center gap-4 text-xs text-purple-400">
+              <span>Joined: {new Date(user.createdAt).toLocaleDateString()}</span>
+              <span>|</span>
+              <span>Public Profile: {user.isPublic ? 'Yes' : 'No'}</span>
             </div>
           </div>
-          
-          <button
-            onClick={() => setEditing(!editing)}
-            className="btn btn-secondary"
-          >
+          <button onClick={() => setEditing(!editing)} className="ml-auto btn btn-secondary bg-purple-100 text-purple-700 hover:bg-purple-200 px-4 py-2 rounded-lg flex items-center gap-2">
             {editing ? <X className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
             {editing ? 'Cancel' : 'Edit'}
           </button>
         </div>
-
-        {/* Profile Form */}
-        {editing ? (
+        {/* Skills/Timeline Card */}
+        <div className="w-full max-w-3xl mx-auto bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-purple-100 p-8 animate-fade-in">
+          <h3 className="text-xl font-bold text-purple-800 mb-6">My Skills</h3>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input
-                type="text"
-                value={profileData.name}
-                onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                name="name"
-                placeholder="Your name"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-              <input
-                type="text"
-                value={profileData.location}
-                onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
-                className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                name="location"
-                placeholder="Enter your location"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-              <textarea
-                value={profileData.bio}
-                onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                rows="3"
-                placeholder="Tell others about yourself..."
-              />
-            </div>
-            
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isPublic"
-                checked={profileData.isPublic}
-                onChange={(e) => setProfileData({ ...profileData, isPublic: e.target.checked })}
-                className="mr-2"
-              />
-              <label htmlFor="isPublic" className="text-sm text-gray-700">
-                Make my profile public
-              </label>
-            </div>
-            
-            <div className="pt-4 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Availability</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={profileData.availability.weekdays}
-                    onChange={(e) => setProfileData({
-                      ...profileData,
-                      availability: { ...profileData.availability, weekdays: e.target.checked }
-                    })}
-                    className="mr-2"
-                  />
-                  Weekdays
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={profileData.availability.weekends}
-                    onChange={(e) => setProfileData({
-                      ...profileData,
-                      availability: { ...profileData.availability, weekends: e.target.checked }
-                    })}
-                    className="mr-2"
-                  />
-                  Weekends
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={profileData.availability.evenings}
-                    onChange={(e) => setProfileData({
-                      ...profileData,
-                      availability: { ...profileData.availability, evenings: e.target.checked }
-                    })}
-                    className="mr-2"
-                  />
-                  Evenings
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={profileData.availability.mornings}
-                    onChange={(e) => setProfileData({
-                      ...profileData,
-                      availability: { ...profileData.availability, mornings: e.target.checked }
-                    })}
-                    className="mr-2"
-                  />
-                  Mornings
-                </label>
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setEditing(false)}
-                className="btn btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={loading}
-                className="btn btn-primary"
-              >
-                {loading ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
+            {user.skillsOffered && user.skillsOffered.length > 0 ? (
+              user.skillsOffered.map((skill, idx) => (
+                <div key={skill._id || idx} className="flex items-center gap-4">
+                  <div className="w-3 h-3 rounded-full bg-gradient-to-br from-purple-400 to-indigo-400" />
+                  <div className="flex-1">
+                    <div className="font-semibold text-purple-700">{skill.name}</div>
+                    <div className="text-xs text-purple-400">{skill.description}</div>
+                  </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">{skill.proficiency}</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-purple-400">No skills offered yet.</div>
+            )}
           </div>
-        ) : (
-          <div>
-            {user.bio && <p className="text-gray-700 mb-4">{user.bio}</p>}
-            <div className="flex items-center text-sm text-gray-600">
-              <Clock className="w-4 h-4 mr-1" />
-              <span>
-                Available: {
-                  Object.entries(user.availability)
-                    .filter(([key, value]) => key !== 'customSchedule' && value)
-                    .map(([key]) => key.charAt(0).toUpperCase() + key.slice(1))
-                    .join(', ') || 'Not specified'
-                }
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Skills Offered */}
-      <div className="card mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Skills I Offer</h3>
-          <button
-            onClick={() => setShowAddSkillOffered(!showAddSkillOffered)}
-            className="btn btn-primary"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Skill
-          </button>
         </div>
-
-        {showAddSkillOffered && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Skill Name</label>
-                <input
-                  type="text"
-                  value={newSkillOffered.name}
-                  onChange={(e) => setNewSkillOffered({ ...newSkillOffered, name: e.target.value })}
-                  className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                  placeholder="e.g., JavaScript"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <input
-                  type="text"
-                  value={newSkillOffered.description}
-                  onChange={(e) => setNewSkillOffered({ ...newSkillOffered, description: e.target.value })}
-                  className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                  placeholder="Brief description"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Proficiency</label>
-                <select
-                  value={newSkillOffered.proficiency}
-                  onChange={(e) => setNewSkillOffered({ ...newSkillOffered, proficiency: e.target.value })}
-                  className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                  <option value="Expert">Expert</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-4">
-              <button
-                onClick={() => setShowAddSkillOffered(false)}
-                className="btn btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddSkillOffered}
-                disabled={!newSkillOffered.name}
-                className="btn btn-primary"
-              >
-                Add Skill
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {user.skillsOffered.map((skill, index) => (
-            <div key={skill._id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900">{skill.name}</h4>
-                {skill.description && <p className="text-sm text-gray-600">{skill.description}</p>}
-                <span className="badge badge-primary text-xs">{skill.proficiency}</span>
-              </div>
-              <button
-                onClick={() => handleRemoveSkillOffered(skill._id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-          {user.skillsOffered.length === 0 && (
-            <p className="text-gray-500 text-center py-4">No skills offered yet</p>
-          )}
+      </main>
+      {/* Right Side Card */}
+      <aside className="hidden lg:flex flex-col w-80 ml-8 gap-8 py-10">
+        <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg border border-purple-100 p-6 animate-fade-in">
+          <h4 className="text-lg font-bold text-purple-800 mb-4">Account Details</h4>
+          <div className="text-sm text-purple-700 mb-2">Email: {user.email}</div>
+          <div className="text-sm text-purple-700 mb-2">Location: {user.location}</div>
+          <div className="text-sm text-purple-700 mb-2">Public: {user.isPublic ? 'Yes' : 'No'}</div>
         </div>
-      </div>
-
-      {/* Skills Wanted */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Skills I Want to Learn</h3>
-          <button
-            onClick={() => setShowAddSkillWanted(!showAddSkillWanted)}
-            className="btn btn-primary"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Skill
-          </button>
+        <div className="bg-gradient-to-br from-purple-400 to-indigo-400 rounded-2xl shadow-lg p-6 text-white animate-fade-in">
+          <h4 className="text-lg font-bold mb-2">SkillSwap Premium</h4>
+          <ul className="text-sm mb-4 list-disc list-inside opacity-90">
+            <li>Priority swap requests</li>
+            <li>Premium badge on profile</li>
+            <li>Early access to new features</li>
+          </ul>
+          <button className="w-full py-2 rounded-lg bg-white/80 text-purple-700 font-bold hover:bg-white transition-colors">Subscribe</button>
         </div>
-
-        {showAddSkillWanted && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Skill Name</label>
-                <input
-                  type="text"
-                  value={newSkillWanted.name}
-                  onChange={(e) => setNewSkillWanted({ ...newSkillWanted, name: e.target.value })}
-                  className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                  placeholder="e.g., Photoshop"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <input
-                  type="text"
-                  value={newSkillWanted.description}
-                  onChange={(e) => setNewSkillWanted({ ...newSkillWanted, description: e.target.value })}
-                  className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                  placeholder="Brief description"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                <select
-                  value={newSkillWanted.priority}
-                  onChange={(e) => setNewSkillWanted({ ...newSkillWanted, priority: e.target.value })}
-                  className="input bg-beige-50 text-brown-700 placeholder-brown-300"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-4">
-              <button
-                onClick={() => setShowAddSkillWanted(false)}
-                className="btn btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddSkillWanted}
-                disabled={!newSkillWanted.name}
-                className="btn btn-primary"
-              >
-                Add Skill
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {user.skillsWanted.map((skill, index) => (
-            <div key={skill._id || index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900">{skill.name}</h4>
-                {skill.description && <p className="text-sm text-gray-600">{skill.description}</p>}
-                <span className="badge badge-secondary text-xs">{skill.priority} Priority</span>
-              </div>
-              <button
-                onClick={() => handleRemoveSkillWanted(skill._id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-          {user.skillsWanted.length === 0 && (
-            <p className="text-gray-500 text-center py-4">No skills wanted yet</p>
-          )}
-        </div>
-      </div>
+      </aside>
     </div>
   );
 };
