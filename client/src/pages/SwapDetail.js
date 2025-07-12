@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import api from '../config/api';
 import toast from 'react-hot-toast';
 import { 
   ArrowLeft, 
@@ -29,7 +29,7 @@ const SwapDetail = () => {
   const fetchSwap = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/swaps/${id}`);
+      const response = await api.get(`/swaps/${id}`);
       setSwap(response.data);
     } catch (error) {
       console.error('Error fetching swap:', error);
@@ -46,7 +46,7 @@ const SwapDetail = () => {
 
   const handleAccept = async () => {
     try {
-      await axios.put(`/api/swaps/${id}/accept`);
+      await api.put(`/swaps/${id}/accept`);
       toast.success('Swap request accepted!');
       fetchSwap();
     } catch (error) {
@@ -57,7 +57,7 @@ const SwapDetail = () => {
 
   const handleReject = async () => {
     try {
-      await axios.put(`/api/swaps/${id}/reject`);
+      await api.put(`/swaps/${id}/reject`);
       toast.success('Swap request rejected');
       fetchSwap();
     } catch (error) {
@@ -68,7 +68,7 @@ const SwapDetail = () => {
 
   const handleComplete = async () => {
     try {
-      await axios.put(`/api/swaps/${id}/complete`);
+      await api.put(`/swaps/${id}/complete`);
       toast.success('Swap marked as completed!');
       fetchSwap();
     } catch (error) {
@@ -79,7 +79,7 @@ const SwapDetail = () => {
 
   const handleCancel = async () => {
     try {
-      await axios.put(`/api/swaps/${id}/cancel`);
+      await api.put(`/swaps/${id}/cancel`);
       toast.success('Swap request cancelled');
       fetchSwap();
     } catch (error) {
@@ -90,11 +90,13 @@ const SwapDetail = () => {
 
   const handleSubmitRating = async () => {
     try {
-      await axios.post(`/api/swaps/${id}/rate`, ratingData);
+      await api.post(`/swaps/${id}/rate`, ratingData);
       toast.success('Rating submitted successfully!');
       setShowRatingModal(false);
       setRatingData({ rating: 5, comment: '' });
       fetchSwap();
+      // Notify Browse page to refresh users
+      window.dispatchEvent(new Event('refresh-users'));
     } catch (error) {
       console.error('Error submitting rating:', error);
       toast.error(error.response?.data?.message || 'Failed to submit rating');
@@ -264,11 +266,11 @@ const SwapDetail = () => {
       </div>
 
       {/* Ratings */}
-      {(swap.requesterRating.rating || swap.recipientRating.rating) && (
+      {((swap.requesterRating && swap.requesterRating.rating) || (swap.recipientRating && swap.recipientRating.rating)) &&
         <div className="card mb-8">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Ratings</h3>
           <div className="space-y-4">
-            {swap.requesterRating.rating && (
+            {swap.requesterRating && swap.requesterRating.rating && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-gray-900">
@@ -286,8 +288,7 @@ const SwapDetail = () => {
                 </p>
               </div>
             )}
-            
-            {swap.recipientRating.rating && (
+            {swap.recipientRating && swap.recipientRating.rating && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-gray-900">
@@ -307,7 +308,7 @@ const SwapDetail = () => {
             )}
           </div>
         </div>
-      )}
+      }
 
       {/* Actions */}
       <div className="flex justify-center space-x-4">

@@ -9,11 +9,12 @@ import {
   Moon,
   Sun,
   LogIn,
-  Home
+  Home,
+  Shield
 } from 'lucide-react';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
 
@@ -49,11 +50,11 @@ const Navbar = () => {
         <div className="flex items-center">
           {isAuthenticated ? (
             <Link to="/profile" className="ml-4">
-              {isAuthenticated && isAuthenticated.profilePhoto ? (
-                <img src={isAuthenticated.profilePhoto} alt="Profile" className="w-10 h-10 rounded-full object-cover border-2 border-[#9F6496] shadow" />
+              {user && user.profilePhoto ? (
+                <img src={user.profilePhoto} alt="Profile" className="w-10 h-10 rounded-full object-cover border-2 border-[#9F6496] shadow" />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-[#9F6496] flex items-center justify-center text-white font-bold text-xl">
-                  {isAuthenticated.name ? isAuthenticated.name.charAt(0).toUpperCase() : 'U'}
+                  {user && user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               )}
             </Link>

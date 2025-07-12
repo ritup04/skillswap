@@ -48,7 +48,16 @@ const Profile = () => {
         }
       });
     }
-  }, [user]);
+    // Listen for refresh-users event to update profile
+    const handler = async () => {
+      try {
+        const response = await api.get('/auth/me');
+        updateUser(response.data.user);
+      } catch (e) {}
+    };
+    window.addEventListener('refresh-users', handler);
+    return () => window.removeEventListener('refresh-users', handler);
+  }, [user, updateUser]);
 
   const handleSave = async () => {
     try {
@@ -192,7 +201,7 @@ const Profile = () => {
           <span className="mt-2 text-sm font-medium">Swaps Completed</span>
         </div>
         <div className="rounded-2xl shadow bg-[#0C0420] text-white p-6 flex flex-col items-center">
-          <span className="text-2xl font-bold">{user.rating?.average?.toFixed(1) || '5.0'}</span>
+          <span className="text-2xl font-bold">{user.rating && typeof user.rating.average === 'number' ? user.rating.average.toFixed(1) : '5.0'}</span>
           <span className="mt-2 text-sm font-medium">Rating</span>
         </div>
       </div>
@@ -359,8 +368,8 @@ const Profile = () => {
                   <div className="text-[#5D3C64] mb-2">{user.location}</div>
                 )}
                 <div className="flex items-center gap-2 mb-2">
-                  {renderStars(user.rating.average)}
-                  <span className="text-sm text-[#9F6496]">({user.rating.count} reviews)</span>
+                  {renderStars(user.rating && typeof user.rating.average === 'number' ? user.rating.average : 5.0)}
+                  <span className="text-sm text-[#9F6496]">({user.rating && typeof user.rating.count === 'number' ? user.rating.count : 0} reviews)</span>
                 </div>
                 {user.bio && (
                   <div className="text-md text-[#0C0420] mb-2">{user.bio}</div>

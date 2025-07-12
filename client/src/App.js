@@ -10,7 +10,9 @@ import Browse from './pages/Browse';
 import UserProfile from './pages/UserProfile';
 import Swaps from './pages/Swaps';
 import SwapDetail from './pages/SwapDetail';
+import AdminPanel from './pages/AdminPanel';
 import LoadingSpinner from './components/LoadingSpinner';
+import AdminLogin from './pages/AdminLogin';
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -20,6 +22,14 @@ const PrivateRoute = ({ children }) => {
   }
   
   return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+const AdminRoute = ({ children }) => {
+  const adminToken = localStorage.getItem('adminToken');
+  if (!adminToken) {
+    return <Navigate to="/admin/login" />;
+  }
+  return children;
 };
 
 function App() {
@@ -61,6 +71,15 @@ function App() {
               <PrivateRoute>
                 <SwapDetail />
               </PrivateRoute>
+            } 
+          />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminPanel />
+              </AdminRoute>
             } 
           />
         </Routes>

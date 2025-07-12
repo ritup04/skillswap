@@ -144,13 +144,13 @@ const UserProfile = () => {
                   {user.location}
                 </p>
               )}
-              {user.rating.count > 0 && (
+              {user.rating && typeof user.rating.average === 'number' && user.rating.count > 0 && (
                 <div className="flex items-center mt-2">
                   <div className="flex items-center mr-2">
-                    {renderStars(user.rating.average)}
+                    {renderStars(user.rating && typeof user.rating.average === 'number' ? user.rating.average : 5.0)}
                   </div>
                   <span className="text-sm text-gray-600">
-                    ({user.rating.count} reviews)
+                    ({user.rating && typeof user.rating.count === 'number' ? user.rating.count : 0} reviews)
                   </span>
                 </div>
               )}
@@ -182,7 +182,7 @@ const UserProfile = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-3">Availability</h2>
         <div className="flex items-center text-gray-600">
           <Clock className="w-4 h-4 mr-2" />
-          <span>{getAvailabilityText(user.availability)}</span>
+          <span>{getAvailabilityText(user.availability || {})}</span>
         </div>
       </div>
 

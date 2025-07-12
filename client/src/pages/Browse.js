@@ -49,6 +49,10 @@ const Browse = () => {
 
   useEffect(() => {
     fetchUsers();
+    // Listen for refresh-users event
+    const handler = () => fetchUsers();
+    window.addEventListener('refresh-users', handler);
+    return () => window.removeEventListener('refresh-users', handler);
   }, [fetchUsers]);
 
   const handleSearch = () => {

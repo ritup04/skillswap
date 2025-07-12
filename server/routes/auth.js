@@ -6,6 +6,9 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
+const ADMIN_ID = process.env.ADMIN_ID;
+const ADMIN_PASS = process.env.ADMIN_PASS;
+
 // Register user
 router.post('/register', [
   body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters long'),
@@ -67,6 +70,37 @@ router.post('/login', [
     }
 
     const { email, password } = req.body;
+
+    // Check for admin credentials
+    if (email === ADMIN_ID && password === ADMIN_PASS) {
+      const adminUser = {
+        _id: 'admin',
+        name: 'Admin',
+        email: ADMIN_ID,
+        isAdmin: true,
+        isPublic: false,
+        profilePhoto: null,
+        rating: { average: 5.0, count: 0 },
+        swapsCompleted: 0,
+        skillsOffered: [],
+        skillsWanted: [],
+        location: '',
+        bio: '',
+        availability: {},
+      };
+      if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
+      }
+      const token = jwt.sign(
+        { userId: adminUser._id, isAdmin: true },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+      return res.json({
+        token,
+        user: adminUser
+      });
+    }
 
     // Check if user exists
     const user = await User.findOne({ email });
