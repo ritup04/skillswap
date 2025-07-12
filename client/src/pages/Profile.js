@@ -191,6 +191,13 @@ const Profile = () => {
       </div>
       {/* Main Card with all details */}
       <div className="w-full max-w-6xl bg-white rounded-3xl shadow-lg border-2 border-[#9F6496] p-12 flex flex-col gap-10 animate-fade-in transition-all duration-500">
+        {/* Logout Button */}
+        <button
+          onClick={logout}
+          className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-[#5D3C64] hover:bg-[#4A2F4F] text-white rounded-lg font-semibold shadow-md transition-colors duration-200"
+        >
+          <LogOut className="w-5 h-5" /> Logout
+        </button>
         {/* Profile Info */}
         <div className="flex flex-col md:flex-row items-center gap-8 mb-6 relative">
           {/* Floating Edit button */}

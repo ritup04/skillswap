@@ -26,22 +26,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-indigo-100 to-white py-12 px-4">
-      <div className="w-full max-w-4xl bg-white/60 backdrop-blur-lg border border-purple-200 shadow-2xl flex flex-col md:flex-row overflow-hidden animate-fade-in rounded-3xl" style={{boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)', border: '1.5px solid rgba(180, 140, 255, 0.25)'}}>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-6 px-2">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col md:flex-row overflow-hidden scale-105">
         {/* Left: Form */}
-        <div className="flex-1 flex flex-col justify-center px-10 py-14 md:py-20 animate-slide-up">
-          <div className="mb-10">
-            <h2 className="text-4xl font-extrabold text-purple-800 mb-2 tracking-tight">Login</h2>
-            <p className="text-purple-400 text-base mb-10">Welcome! Please log in to your account.</p>
+        <div className="flex-1 flex flex-col justify-center px-8 py-8">
+          <div className="mb-6">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-1 tracking-tight">Login</h2>
+            <p className="text-gray-600 text-base mb-6">Welcome! Please log in to your account.</p>
           </div>
-          <form className="space-y-7" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-5">
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-3">
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-purple-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
                   Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-200 w-5 h-5" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     id="email"
                     type="email"
@@ -52,20 +52,20 @@ const Login = () => {
                         message: 'Invalid email address'
                       }
                     })}
-                    className="input pl-10 bg-purple-50 text-purple-900 placeholder-purple-300 border border-purple-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-300"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 text-gray-900 placeholder-gray-400 border border-gray-200 rounded-xl focus:border-[#5D3C64] focus:ring-2 focus:ring-[#5D3C64]/20 text-base transition-colors duration-200"
                     placeholder="Enter your email"
                   />
                 </div>
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-purple-700 mb-1">
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-200 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
@@ -76,38 +76,38 @@ const Login = () => {
                         message: 'Password must be at least 6 characters'
                       }
                     })}
-                    className="input pl-10 pr-10 bg-purple-50 text-purple-900 placeholder-purple-300 border border-purple-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-300"
+                    className="w-full pl-10 pr-10 py-3 bg-gray-50 text-gray-900 placeholder-gray-400 border border-gray-200 rounded-xl focus:border-[#5D3C64] focus:ring-2 focus:ring-[#5D3C64]/20 text-base transition-colors duration-200"
                     placeholder="Please enter your password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-200 hover:text-purple-500"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#5D3C64] transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
                 )}
               </div>
             </div>
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn btn-primary py-3 text-lg rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+              className="w-full bg-[#5D3C64] hover:bg-[#4A2F4F] text-white font-semibold py-3 text-base rounded-xl shadow-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             >
               {isLoading ? 'Signing in...' : 'LOGIN'}
             </button>
           </form>
-          <div className="mt-10 text-sm text-purple-500 text-center">
+          <div className="mt-6 text-sm text-gray-600 text-center">
             Don't have an account?{' '}
-            <Link to="/register" className="text-purple-700 font-semibold hover:underline">Sign up</Link>
+            <Link to="/register" className="text-[#5D3C64] font-semibold hover:underline">Sign up</Link>
           </div>
         </div>
         {/* Right: Illustration */}
-        <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100 animate-slide-up">
-          <img src="/login.png" alt="Login Illustration" className="max-w-lg w-full h-auto drop-shadow-xl" />
+        <div className="flex-1 flex items-center justify-center bg-gray-50">
+          <img src="/login.png" alt="Login Illustration" className="max-w-md w-full h-auto" />
         </div>
       </div>
     </div>
