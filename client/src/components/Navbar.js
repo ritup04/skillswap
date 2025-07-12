@@ -31,33 +31,36 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-light-card dark:bg-dark-card rounded-3xl shadow-card px-8 py-4 mt-6 mb-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 transition-colors duration-300">
-      <div className="flex items-center space-x-3">
-        <Users className="w-8 h-8 text-light-primary dark:text-dark-primary" />
-        <span className="text-2xl font-extrabold text-light-primary dark:text-dark-primary tracking-tight">SkillSwap</span>
-      </div>
-      <div className="flex items-center space-x-8 text-lg font-medium">
-        <Link to="/" className="flex items-center gap-1 text-light-text dark:text-dark-text hover:text-light-primary dark:hover:text-dark-primary transition-colors"><Home className="w-5 h-5" />Home</Link>
-        <Link to="/browse" className="flex items-center gap-1 text-light-text dark:text-dark-text hover:text-light-primary dark:hover:text-dark-primary transition-colors"><Search className="w-5 h-5" />Browse</Link>
-        {isAuthenticated ? (
-          <>
-            <Link to="/swaps" className="flex items-center gap-1 text-light-text dark:text-dark-text hover:text-light-primary dark:hover:text-dark-primary transition-colors"><Users className="w-5 h-5" />My Swaps</Link>
-            <Link to="/profile" className="flex items-center gap-1 text-light-text dark:text-dark-text hover:text-light-primary dark:hover:text-dark-primary transition-colors"><User className="w-5 h-5" />Profile</Link>
-            <button onClick={handleLogout} className="flex items-center gap-1 text-light-text dark:text-dark-text hover:text-light-primary dark:hover:text-dark-primary transition-colors"><LogOut className="w-5 h-5" />Logout</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="flex items-center gap-1 text-light-text dark:text-dark-text hover:text-light-primary dark:hover:text-dark-primary transition-colors"><LogIn className="w-5 h-5" />Login</Link>
-            <Link to="/register" className="btn btn-primary rounded-full px-6 py-2">Sign Up</Link>
-          </>
-        )}
-        <button
-          onClick={() => setDarkMode((prev) => !prev)}
-          className="ml-4 p-2 rounded-full bg-light-bg dark:bg-dark-bg border border-light-muted dark:border-dark-muted text-light-primary dark:text-dark-primary hover:bg-light-muted dark:hover:bg-dark-muted transition-colors"
-          aria-label="Toggle dark mode"
-        >
-          {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm px-0 py-0 border-t-4 border-[#9F6496]">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-3">
+        {/* Logo */}
+        <div className="flex items-center">
+          <span className="text-2xl font-extrabold text-[#9F6496] tracking-tight">SkillSwap</span>
+        </div>
+        {/* Centered Nav Links */}
+        <div className="flex-1 flex justify-center">
+          <div className="flex space-x-10 text-[#0C0420] text-lg font-medium">
+            <Link to="/" className="hover:text-[#9F6496] transition-colors">Home</Link>
+            <Link to="/browse" className="hover:text-[#9F6496] transition-colors">Browse</Link>
+            <Link to="/swaps" className="hover:text-[#9F6496] transition-colors">My Swap Requests</Link>
+          </div>
+        </div>
+        {/* Right: Login or Profile */}
+        <div className="flex items-center">
+          {isAuthenticated ? (
+            <Link to="/profile" className="ml-4">
+              {isAuthenticated && isAuthenticated.profilePhoto ? (
+                <img src={isAuthenticated.profilePhoto} alt="Profile" className="w-10 h-10 rounded-full object-cover border-2 border-[#9F6496] shadow" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#9F6496] flex items-center justify-center text-white font-bold text-xl">
+                  {isAuthenticated.name ? isAuthenticated.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+              )}
+            </Link>
+          ) : (
+            <Link to="/login" className="ml-4 px-5 py-2 rounded-lg border border-[#9F6496] text-[#5D3C64] font-semibold hover:bg-[#9F6496] hover:text-white transition-colors">Login</Link>
+          )}
+        </div>
       </div>
     </nav>
   );
