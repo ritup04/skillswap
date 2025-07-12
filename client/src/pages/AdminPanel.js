@@ -60,42 +60,42 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="w-full bg-[#5D3C64] text-white py-6 px-8 flex items-center justify-between shadow">
-        <h1 className="text-3xl font-bold">Admin Panel</h1>
+      <div className="w-full bg-[#5D3C64] text-white py-6 px-8 flex items-center justify-between shadow-lg">
+        <h1 className="text-3xl font-bold tracking-tight">Admin Panel</h1>
         <button
-          className="bg-white text-[#5D3C64] px-4 py-2 rounded-lg font-semibold shadow hover:bg-gray-100"
+          className="bg-white text-[#5D3C64] px-4 py-2 rounded-lg font-semibold shadow hover:bg-gray-100 border border-[#D391B0] transition-colors"
           onClick={() => navigate('/')}
         >
           Back to Main
         </button>
       </div>
-      <div className="flex flex-1">
+      <div className="flex flex-1 bg-[#F8F6FA]">
         {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col py-8 px-4 gap-2">
-          <button className={`text-left px-4 py-3 rounded-lg font-semibold ${activeTab === 'skills' ? 'bg-[#D391B0] text-[#0C0420]' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('skills')}>Skill Moderation</button>
-          <button className={`text-left px-4 py-3 rounded-lg font-semibold ${activeTab === 'users' ? 'bg-[#D391B0] text-[#0C0420]' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('users')}>User Management</button>
-          <button className={`text-left px-4 py-3 rounded-lg font-semibold ${activeTab === 'swaps' ? 'bg-[#D391B0] text-[#0C0420]' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('swaps')}>Swap Monitoring</button>
-          <button className={`text-left px-4 py-3 rounded-lg font-semibold ${activeTab === 'messages' ? 'bg-[#D391B0] text-[#0C0420]' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('messages')}>Platform Messages</button>
-          <button className={`text-left px-4 py-3 rounded-lg font-semibold ${activeTab === 'reports' ? 'bg-[#D391B0] text-[#0C0420]' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('reports')}>Reports</button>
+        <div className="w-64 bg-white border-r border-[#D391B0] flex flex-col py-8 px-4 gap-2 shadow-md rounded-tr-3xl rounded-br-3xl">
+          <button className={`text-left px-4 py-3 rounded-lg font-semibold transition-colors ${activeTab === 'skills' ? 'bg-[#D391B0] text-[#0C0420] shadow' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('skills')}>Skill Moderation</button>
+          <button className={`text-left px-4 py-3 rounded-lg font-semibold transition-colors ${activeTab === 'users' ? 'bg-[#D391B0] text-[#0C0420] shadow' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('users')}>User Management</button>
+          <button className={`text-left px-4 py-3 rounded-lg font-semibold transition-colors ${activeTab === 'swaps' ? 'bg-[#D391B0] text-[#0C0420] shadow' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('swaps')}>Swap Monitoring</button>
+          <button className={`text-left px-4 py-3 rounded-lg font-semibold transition-colors ${activeTab === 'messages' ? 'bg-[#D391B0] text-[#0C0420] shadow' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('messages')}>Platform Messages</button>
+          <button className={`text-left px-4 py-3 rounded-lg font-semibold transition-colors ${activeTab === 'reports' ? 'bg-[#D391B0] text-[#0C0420] shadow' : 'hover:bg-gray-100 text-[#5D3C64]'}`} onClick={() => setActiveTab('reports')}>Reports</button>
         </div>
         {/* Main Content */}
         <div className="flex-1 p-10">
           {activeTab === 'skills' && (
             <div>
-              <h2 className="text-2xl font-bold mb-4">Skill Moderation</h2>
-              <p className="mb-4">Review and reject inappropriate or spammy skill descriptions here.</p>
+              <h2 className="text-2xl font-bold mb-4 text-[#5D3C64]">Skill Moderation</h2>
+              <p className="mb-4 text-[#7B466A]">Review and reject inappropriate or spammy skill descriptions here.</p>
               {loading ? <LoadingSpinner /> : (
                 <>
-                  {error && <div className="text-red-600 mb-2">{error}</div>}
-                  {success && <div className="text-green-600 mb-2">{success}</div>}
+                  {error && <div className="text-red-600 mb-2 font-semibold bg-red-50 border border-red-200 rounded-lg px-4 py-2">{error}</div>}
+                  {success && <div className="text-green-600 mb-2 font-semibold bg-green-50 border border-green-200 rounded-lg px-4 py-2">{success}</div>}
                   <div className="space-y-6">
-                    {users.length === 0 && <div>No users found.</div>}
+                    {users.length === 0 && <div className="text-gray-400">No users found.</div>}
                     {users.filter(user => user._id !== 'admin').map(user => (
-                      <div key={user._id} className="bg-white rounded-xl shadow p-6 flex flex-col gap-2">
+                      <div key={user._id} className="bg-white rounded-xl shadow p-6 flex flex-col gap-2 border border-[#E5D0E3]">
                         <div className="flex items-center gap-4 mb-2">
-                          <img src={user.profilePhoto || '/default-avatar.png'} alt="avatar" className="w-14 h-14 rounded-full object-cover border" />
+                          <img src={user.profilePhoto || '/default-avatar.png'} alt="avatar" className="w-14 h-14 rounded-full object-cover border-2 border-[#D391B0]" />
                           <div>
-                            <div className="font-semibold text-lg">{user.name}</div>
+                            <div className="font-semibold text-lg text-[#0C0420]">{user.name}</div>
                             <div className="text-sm text-gray-500">{user.location}</div>
                           </div>
                         </div>
@@ -124,10 +124,10 @@ const AdminPanel = () => {
               )}
             </div>
           )}
-          {activeTab === 'users' && <div><h2 className="text-2xl font-bold mb-4">User Management</h2><p>Ban users, view user details, and manage user accounts here.</p></div>}
-          {activeTab === 'swaps' && <div><h2 className="text-2xl font-bold mb-4">Swap Monitoring</h2><p>Monitor all swaps (pending, accepted, cancelled) here.</p></div>}
-          {activeTab === 'messages' && <div><h2 className="text-2xl font-bold mb-4">Platform Messages</h2><p>Send platform-wide messages and alerts here.</p></div>}
-          {activeTab === 'reports' && <div><h2 className="text-2xl font-bold mb-4">Reports</h2><p>Download user activity, feedback logs, and swap stats here.</p></div>}
+          {activeTab === 'users' && <div><h2 className="text-2xl font-bold mb-4 text-[#5D3C64]">User Management</h2><p className="text-[#7B466A]">Ban users, view user details, and manage user accounts here.</p></div>}
+          {activeTab === 'swaps' && <div><h2 className="text-2xl font-bold mb-4 text-[#5D3C64]">Swap Monitoring</h2><p className="text-[#7B466A]">Monitor all swaps (pending, accepted, cancelled) here.</p></div>}
+          {activeTab === 'messages' && <div><h2 className="text-2xl font-bold mb-4 text-[#5D3C64]">Platform Messages</h2><p className="text-[#7B466A]">Send platform-wide messages and alerts here.</p></div>}
+          {activeTab === 'reports' && <div><h2 className="text-2xl font-bold mb-4 text-[#5D3C64]">Reports</h2><p className="text-[#7B466A]">Download user activity, feedback logs, and swap stats here.</p></div>}
         </div>
       </div>
     </div>

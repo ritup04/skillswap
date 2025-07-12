@@ -20,17 +20,26 @@ const AdminLogin = () => {
     setIsLoading(true);
     setError('');
     try {
-      // Use backend /auth/login endpoint, send username as email
+      // Send username as email for backend compatibility
       const response = await api.post('/auth/login', {
-        email: form.username,
-        password: form.password,
+        email: form.username, // backend expects email field
+        password: form.password
       });
-      localStorage.setItem('adminToken', response.data.token);
+      // Ensure the JWT contains userId: 'admin' and isAdmin: true
+      const token = response.data.token;
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      if (decoded.userId !== 'admin' || !decoded.isAdmin) {
+        setError('You do not have admin permissions.');
+        setIsLoading(false);
+        return;
+      }
+      localStorage.setItem('adminToken', token);
       navigate('/admin');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid admin credentials');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
