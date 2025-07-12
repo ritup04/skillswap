@@ -5,8 +5,10 @@ import toast from 'react-hot-toast';
 import { Edit, X, MapPin, Clock, Star, User, LogOut, Camera } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import api from '../config/api';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { user, updateUser, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -159,6 +161,11 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   if (!user) {
     return <LoadingSpinner size="lg" className="py-20" />;
   }
@@ -190,26 +197,20 @@ const Profile = () => {
         </div>
       </div>
       {/* Main Card with all details */}
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-lg border-2 border-[#9F6496] p-12 flex flex-col gap-10 animate-fade-in transition-all duration-500">
-        {/* Logout Button */}
-        <button
-          onClick={logout}
-          className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-[#5D3C64] hover:bg-[#4A2F4F] text-white rounded-lg font-semibold shadow-md transition-colors duration-200"
-        >
-          <LogOut className="w-5 h-5" /> Logout
-        </button>
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-lg border-2 border-[#9F6496] p-12 flex flex-col gap-10 animate-fade-in transition-all duration-500 relative">
+        {/* Edit button at top right */}
+        {!editing && (
+          <button
+            onClick={() => setEditing(true)}
+            className="absolute top-6 right-6 bg-[#D391B0] text-[#0C0420] hover:bg-[#BA6E8F] px-6 py-3 rounded-lg flex items-center gap-2 font-bold shadow z-20"
+            title="Edit Profile"
+            style={{ zIndex: 20 }}
+          >
+            <Edit className="w-5 h-5" /> Edit
+          </button>
+        )}
         {/* Profile Info */}
         <div className="flex flex-col md:flex-row items-center gap-8 mb-6 relative">
-          {/* Floating Edit button */}
-          {!editing && (
-            <button
-              onClick={() => setEditing(true)}
-              className="absolute top-0 right-0 bg-[#D391B0] text-[#0C0420] hover:bg-[#BA6E8F] px-4 py-2 rounded-lg flex items-center gap-2 font-bold shadow z-10"
-              title="Edit Profile"
-            >
-              <Edit className="w-4 h-4" /> Edit
-            </button>
-          )}
           <div className="flex-shrink-0 flex flex-col items-center gap-2 relative">
             {user.profilePhoto ? (
               <div className="relative">
@@ -637,6 +638,14 @@ const Profile = () => {
               <div className="text-[#0C0420] mb-2">Custom: {user.availability?.customSchedule || <span className="text-gray-400">None</span>}</div>
             </>
           )}
+        </div>
+        <div className="flex w-full justify-between items-end mt-8">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-[#5D3C64] hover:bg-[#4A2F4F] text-white rounded-lg font-semibold shadow-md transition-colors duration-200"
+          >
+            <LogOut className="w-5 h-5" /> Logout
+          </button>
         </div>
       </div>
     </div>

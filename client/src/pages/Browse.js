@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Search, MapPin, Clock, Filter, X } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../config/api';
 
 const Browse = () => {
   const [users, setUsers] = useState([]);
@@ -95,10 +96,10 @@ const Browse = () => {
     }
     setSwapLoading(true);
     try {
-      await axios.post('/api/swaps/request', {
+      await api.post('/swaps', {
         recipientId: swapTarget._id,
-        offeredSkillId: mySkill,
-        requestedSkillId: theirSkill,
+        requestedSkill: { name: theirSkill },
+        offeredSkill: { name: mySkill },
         message: swapMessage
       });
       toast.success('Swap request sent!');
@@ -315,12 +316,12 @@ const Browse = () => {
                 >
                   <option value="">Select a skill</option>
                   {currentUser?.skillsOffered?.map(skill => (
-                    <option key={skill._id} value={skill._id}>{skill.name}</option>
+                    <option key={skill.name} value={skill.name}>{skill.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-[#9F6496] font-semibold mb-1">Choose one of their wanted skills</label>
+                <label className="block text-[#9F6496] font-semibold mb-1">Choose one of their offered skills</label>
                 <select
                   className="w-full px-4 py-2 rounded-lg border border-[#D391B0] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white/80"
                   value={theirSkill}
@@ -328,8 +329,8 @@ const Browse = () => {
                   required
                 >
                   <option value="">Select a skill</option>
-                  {swapTarget.skillsWanted?.map(skill => (
-                    <option key={skill._id} value={skill._id}>{skill.name}</option>
+                  {swapTarget.skillsOffered?.map(skill => (
+                    <option key={skill.name} value={skill.name}>{skill.name}</option>
                   ))}
                 </select>
               </div>

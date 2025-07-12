@@ -184,46 +184,44 @@ const Swaps = () => {
           </div>
         ) : (
           swaps.map((swap) => (
-            <div key={swap._id} className="w-full bg-white/80 rounded-2xl shadow-lg border-2 border-[#D391B0] p-8 flex flex-col md:flex-row items-center gap-8 hover:shadow-2xl transition-shadow mx-auto">
-              {/* Left: User avatars and info */}
-              <div className="flex-shrink-0 flex flex-col items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-[#7B466A] flex items-center justify-center text-4xl text-white font-bold shadow-lg border-4 border-[#7B466A]">
-                  <User className="w-12 h-12" />
+            <div key={swap._id} className="w-full bg-white rounded-2xl shadow-lg border-2 border-[#D391B0] p-6 md:p-8 flex flex-col md:flex-row items-center md:items-stretch gap-6 md:gap-10 hover:shadow-2xl transition-shadow mx-auto">
+              {/* Left: User avatar and info */}
+              <div className="flex-shrink-0 flex flex-col items-center justify-center md:justify-start md:items-start min-w-[110px]">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#7B466A] flex items-center justify-center text-3xl md:text-4xl text-white font-bold shadow-lg border-4 border-[#7B466A]">
+                  <User className="w-10 h-10 md:w-12 md:h-12" />
                 </div>
-                <div className="mt-2 text-[#0C0420] font-semibold text-lg">
+                <div className="mt-2 text-[#0C0420] font-semibold text-base md:text-lg text-center md:text-left">
                   {swap.requester._id === currentUser._id ? 'You' : swap.requester.name}
                 </div>
-                <div className="text-[#9F6496] text-xs">Requester</div>
+                <div className="text-[#9F6496] text-xs text-center md:text-left">Requester</div>
               </div>
               {/* Center: Swap details */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-4 mb-2">
+              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span className="text-[#7B466A] font-bold text-lg">{swap.status.charAt(0).toUpperCase() + swap.status.slice(1)}</span>
                   {getStatusBadge(swap.status)}
                 </div>
-                <div className="flex flex-col md:flex-row gap-8">
-                  <div>
+                <div className="flex flex-wrap gap-6 mb-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-green-700">You're offering:</span>
-                    <span className="ml-2 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-300">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-300">
                       {swap.offeredSkill.name}
                     </span>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-blue-700">You're requesting:</span>
-                    <span className="ml-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-300">
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-300">
                       {swap.requestedSkill.name}
                     </span>
                   </div>
                 </div>
                 {swap.message && (
-                  <div className="mt-4 p-3 bg-[#F5F0F7] rounded-lg">
-                    <div className="flex items-start space-x-2">
-                      <MessageSquare className="w-4 h-4 text-[#9F6496] mt-0.5" />
-                      <p className="text-sm text-[#7B466A]">{swap.message}</p>
-                    </div>
+                  <div className="mt-2 p-3 bg-[#F5F0F7] rounded-lg flex items-start gap-2">
+                    <MessageSquare className="w-4 h-4 text-[#9F6496] mt-0.5" />
+                    <p className="text-sm text-[#7B466A] break-words">{swap.message}</p>
                   </div>
                 )}
-                <div className="flex items-center gap-6 mt-4 text-sm text-[#5D3C64]">
+                <div className="flex flex-wrap items-center gap-6 mt-3 text-sm text-[#5D3C64]">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
                     Created {formatDate(swap.createdAt)}
@@ -237,10 +235,10 @@ const Swaps = () => {
                 </div>
               </div>
               {/* Right: Action Buttons */}
-              <div className="flex flex-col gap-2 items-end min-w-[160px]">
+              <div className="flex flex-col gap-3 items-stretch min-w-[140px] md:justify-center md:items-end mt-4 md:mt-0">
                 <Link
                   to={`/swaps/${swap._id}`}
-                  className="px-5 py-2 rounded-lg bg-[#D391B0] text-[#0C0420] font-bold shadow hover:bg-[#BA6E8F] transition-colors text-md"
+                  className="px-5 py-2 rounded-lg bg-[#D391B0] text-[#0C0420] font-bold shadow hover:bg-[#BA6E8F] transition-colors text-md text-center"
                 >
                   View Details
                 </Link>
@@ -264,9 +262,9 @@ const Swaps = () => {
                     ) : (
                       <button
                         onClick={() => handleCancel(swap._id)}
-                        className="px-5 py-2 rounded-lg bg-red-600 text-white font-bold shadow hover:bg-red-700 transition-colors text-md"
+                        className="px-5 py-2 rounded-lg bg-[#F5C6CB] text-[#A94442] font-bold shadow hover:bg-[#F1948A] border border-[#F1948A] transition-colors text-md flex items-center gap-2 justify-center"
                       >
-                        <X className="w-4 h-4 mr-1" /> Withdraw
+                        <X className="w-4 h-4" /> Withdraw
                       </button>
                     )}
                   </>
