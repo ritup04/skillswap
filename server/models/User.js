@@ -84,17 +84,104 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  rating: {
-    average: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5
+  // New: Array of individual ratings (like commercial platforms)
+  ratings: [{
+    reviewer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
     },
-    count: {
+    swap: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Swap',
+      required: true
+    },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      required: true
+    },
+    comment: {
+      type: String,
+      trim: true,
+      maxlength: 500
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    // Flagging fields for moderation
+    flagged: {
+      type: Boolean,
+      default: false
+    },
+    flaggedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    flaggedReason: {
+      type: String,
+      trim: true
+    },
+    flaggedDate: {
+      type: Date
+    },
+    // Helpfulness voting
+    helpfulVotes: [{
+      voter: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      isHelpful: {
+        type: Boolean,
+        required: true
+      },
+      date: {
+        type: Date,
+        default: Date.now
+      }
+    }],
+    helpfulCount: {
       type: Number,
       default: 0
+    },
+    notHelpfulCount: {
+      type: Number,
+      default: 0
+    },
+    // Review response
+    response: {
+      text: {
+        type: String,
+        trim: true,
+        maxlength: 1000
+      },
+      date: {
+        type: Date
+      }
+    },
+    // Verification fields
+    verified: {
+      type: Boolean,
+      default: false
+    },
+    verifiedSwapId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Swap'
+    },
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    verifiedDate: {
+      type: Date
     }
+  }],
+  swapsCompleted: {
+    type: Number,
+    default: 0
   },
   bio: {
     type: String,
@@ -130,5 +217,19 @@ userSchema.methods.getPublicProfile = function() {
   delete userObject.email;
   return userObject;
 };
+
+// Add virtuals for average rating and count
+userSchema.virtual('ratingAverage').get(function() {
+  if (!this.ratings || this.ratings.length === 0) return 0;
+  const sum = this.ratings.reduce((acc, r) => acc + r.rating, 0);
+  return sum / this.ratings.length;
+});
+
+userSchema.virtual('ratingCount').get(function() {
+  return this.ratings ? this.ratings.length : 0;
+});
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('User', userSchema); 

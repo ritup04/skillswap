@@ -222,6 +222,10 @@ router.put('/:id/complete', auth, async (req, res) => {
     swap.completedDate = new Date();
     await swap.save();
 
+    // Increment swapsCompleted for both users
+    await User.findByIdAndUpdate(swap.requester, { $inc: { swapsCompleted: 1 } });
+    await User.findByIdAndUpdate(swap.recipient, { $inc: { swapsCompleted: 1 } });
+
     await swap.populate('requester', 'name profilePhoto');
     await swap.populate('recipient', 'name profilePhoto');
 
@@ -300,45 +304,29 @@ router.post('/:id/rate', auth, [
       return res.status(400).json({ message: 'You have already rated this swap' });
     }
 
-    // Add rating
+    // Add rating to swap (for swap history)
     swap[ratingField] = {
       rating,
       comment,
       date: new Date()
     };
-
     await swap.save();
 
-    // Update user's average rating
+    // Add rating to the rated user's ratings array
     const userToUpdate = isRequester ? swap.recipient : swap.requester;
     const user = await User.findById(userToUpdate);
-    
-    const userSwaps = await Swap.find({
-      $or: [{ requester: userToUpdate }, { recipient: userToUpdate }],
-      status: 'completed',
-      $or: [
-        { 'requesterRating.rating': { $exists: true } },
-        { 'recipientRating.rating': { $exists: true } }
-      ]
-    });
-
-    let totalRating = 0;
-    let ratingCount = 0;
-
-    userSwaps.forEach(userSwap => {
-      if (userSwap.requester.toString() === userToUpdate.toString() && userSwap.requesterRating.rating) {
-        totalRating += userSwap.requesterRating.rating;
-        ratingCount++;
-      }
-      if (userSwap.recipient.toString() === userToUpdate.toString() && userSwap.recipientRating.rating) {
-        totalRating += userSwap.recipientRating.rating;
-        ratingCount++;
-      }
-    });
-
-    user.rating.average = ratingCount > 0 ? totalRating / ratingCount : 0;
-    user.rating.count = ratingCount;
-    await user.save();
+    // Prevent duplicate ratings for the same swap by the same reviewer
+    const alreadyRated = user.ratings.some(r => r.reviewer.toString() === req.user._id.toString() && r.swap && r.swap.toString() === swap._id.toString());
+    if (!alreadyRated) {
+      user.ratings.push({
+        reviewer: req.user._id,
+        swap: swap._id,
+        rating,
+        comment,
+        date: new Date()
+      });
+      await user.save();
+    }
 
     await swap.populate('requester', 'name profilePhoto');
     await swap.populate('recipient', 'name profilePhoto');

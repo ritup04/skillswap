@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -13,6 +13,7 @@ import SwapDetail from './pages/SwapDetail';
 import AdminPanel from './pages/AdminPanel';
 import LoadingSpinner from './components/LoadingSpinner';
 import AdminLogin from './pages/AdminLogin';
+import Footer from './components/Footer';
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -34,15 +35,32 @@ const AdminRoute = ({ children }) => {
 
 function App() {
   const { loading } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    document.body.classList.remove('browse-page','login-page','register-page','profile-page','swaps-page','userprofile-page','swapdetail-page');
+    if (path === '/browse') document.body.classList.add('browse-page');
+    else if (path === '/login') document.body.classList.add('login-page');
+    else if (path === '/register') document.body.classList.add('register-page');
+    else if (path === '/profile') document.body.classList.add('profile-page');
+    else if (path === '/swaps') document.body.classList.add('swaps-page');
+    else if (path.startsWith('/user/')) document.body.classList.add('userprofile-page');
+    else if (path.startsWith('/swaps/')) document.body.classList.add('swapdetail-page');
+  }, [location.pathname]);
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
+  // Hide Navbar and Footer on admin and admin login routes
+  const hideNavbar = location.pathname.startsWith('/admin');
+  const hideFooter = location.pathname.startsWith('/admin');
+
   return (
-    <div className="min-h-screen bg-transparent">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
+    <div className="min-h-screen flex flex-col bg-transparent">
+      {!hideNavbar && <Navbar />}
+      <main className="container mx-auto px-4 py-8 flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -84,6 +102,7 @@ function App() {
           />
         </Routes>
       </main>
+      {!hideFooter && <Footer />}
     </div>
   );
 }

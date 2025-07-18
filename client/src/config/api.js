@@ -9,24 +9,25 @@ const api = axios.create({
   },
 });
 
-// Add a request interceptor
-api.interceptors.request.use(
-  (config) => {
-    // Use adminToken for admin endpoints, else use user token
-    const isAdminEndpoint = config.url && (config.url.includes('/users/all') || config.url.includes('/admin'));
-    const adminToken = localStorage.getItem('adminToken');
-    const userToken = localStorage.getItem('token');
-    if (isAdminEndpoint && adminToken) {
-      config.headers.Authorization = `Bearer ${adminToken}`;
-    } else if (userToken) {
-      config.headers.Authorization = `Bearer ${userToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// Attach token for all requests
+api.interceptors.request.use((config) => {
+  // Attach user token
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
-);
+  // Attach adminToken for admin endpoints
+  if (
+    config.url.includes('/users/all') ||
+    config.url.includes('/admin')
+  ) {
+    const adminToken = localStorage.getItem('adminToken');
+    if (adminToken) {
+      config.headers['Authorization'] = `Bearer ${adminToken}`;
+    }
+  }
+  return config;
+});
 
 // Add a response interceptor
 api.interceptors.response.use(

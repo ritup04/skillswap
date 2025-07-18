@@ -33,12 +33,15 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await api.get('/auth/me');
           setUser(response.data.user);
+          setLoading(false);
         } catch (error) {
           console.error('Auth check failed:', error);
           logout();
+          setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();

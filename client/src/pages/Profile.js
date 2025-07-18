@@ -183,8 +183,8 @@ const Profile = () => {
     <div className="min-h-screen flex flex-col items-center justify-start bg-white pt-2 pb-10 px-2">
       {/* Header with greeting and illustration */}
       <div className="w-full max-w-6xl flex flex-col items-start justify-between mb-6 mt-16">
-        <h1 className="text-4xl font-bold text-[#0C0420] mb-2">Hi, {user.name}</h1>
-        <p className="text-lg text-[#5D3C64]">Welcome back! Ready to swap some skills today?</p>
+        <h1 className="text-4xl font-bold text-brand-plum mb-2">Hi, {user.name}</h1>
+        <p className="text-lg text-brand-orchid">Welcome back! Ready to swap some skills today?</p>
       </div>
       {/* Stat Cards */}
       <div className="w-full max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
@@ -197,11 +197,11 @@ const Profile = () => {
           <span className="mt-2 text-sm font-medium">Skills Wanted</span>
         </div>
         <div className="rounded-2xl shadow bg-[#9F6496] text-white p-6 flex flex-col items-center">
-          <span className="text-2xl font-bold">{user.swapsCompleted || 0}</span>
+          <span className="text-2xl font-bold">{typeof user.swapsCompleted === 'number' ? user.swapsCompleted : 0}</span>
           <span className="mt-2 text-sm font-medium">Swaps Completed</span>
         </div>
         <div className="rounded-2xl shadow bg-[#0C0420] text-white p-6 flex flex-col items-center">
-          <span className="text-2xl font-bold">{user.rating && typeof user.rating.average === 'number' ? user.rating.average.toFixed(1) : '5.0'}</span>
+          <span className="text-2xl font-bold">{typeof user.ratingAverage === 'number' ? user.ratingAverage.toFixed(1) : '0.0'}</span>
           <span className="mt-2 text-sm font-medium">Rating</span>
         </div>
       </div>

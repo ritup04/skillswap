@@ -131,15 +131,33 @@ const Swaps = () => {
     });
   };
 
+  // Add a renderStars function for displaying stars
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
+    }
+    if (hasHalfStar) {
+      stars.push(<Star key="half" className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
+    }
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
+    }
+    return stars;
+  };
+
   if (loading) {
     return <LoadingSpinner size="lg" className="py-20" />;
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center pt-8 pb-16 px-2">
+    <div className="min-h-screen flex flex-col items-center bg-white pt-8 px-2 animate-fade-in">
       <div className="w-full max-w-6xl flex flex-col items-start mb-8 mt-4">
-        <h1 className="text-4xl font-bold text-[#0C0420] mb-2">My Swap Requests</h1>
-        <p className="text-lg text-[#5D3C64]">Manage your skill exchange requests</p>
+        <h1 className="text-4xl font-extrabold text-brand-plum mb-2 drop-shadow-lg">My Swaps</h1>
+        <p className="text-lg text-brand-orchid">Track your skill swap requests and history</p>
       </div>
 
       {/* Tabs */}
@@ -277,13 +295,32 @@ const Swaps = () => {
                     Mark as Completed
                   </button>
                 )}
-                {swap.status === 'completed' && !swap.requesterRating?.rating && (
-                  <button
-                    onClick={() => openRatingModal(swap)}
-                    className="px-5 py-2 rounded-lg bg-[#7B466A] text-white font-bold shadow hover:bg-[#5D3C64] transition-colors text-md"
-                  >
-                    Leave Rating
-                  </button>
+                {swap.status === 'completed' && (
+                  <>
+                    {/* Show rating if exists, else show Leave Rating button */}
+                    {((swap.requester._id === currentUser._id && swap.requesterRating?.rating) ||
+                      (swap.recipient._id === currentUser._id && swap.recipientRating?.rating)) ? (
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-bold text-sm shadow">
+                          {renderStars(swap.requester._id === currentUser._id ? swap.requesterRating.rating : swap.recipientRating.rating)}
+                          <span className="ml-2">{swap.requester._id === currentUser._id ? swap.requesterRating.rating.toFixed(1) : swap.recipientRating.rating.toFixed(1)}/5</span>
+                        </span>
+                        {((swap.requester._id === currentUser._id && swap.requesterRating?.comment) ||
+                          (swap.recipient._id === currentUser._id && swap.recipientRating?.comment)) && (
+                          <span className="text-xs text-gray-700 italic mt-1 max-w-[160px] text-right">
+                            "{swap.requester._id === currentUser._id ? swap.requesterRating.comment : swap.recipientRating.comment}"
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => openRatingModal(swap)}
+                        className="px-5 py-2 rounded-lg bg-[#7B466A] text-white font-bold shadow hover:bg-[#5D3C64] transition-colors text-md"
+                      >
+                        Leave Rating
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

@@ -8,7 +8,10 @@ import {
   Clock, 
   Star, 
   Send,
-  ArrowLeft
+  ArrowLeft,
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -19,6 +22,14 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSwapModal, setShowSwapModal] = useState(false);
+  const [showAllReviewsModal, setShowAllReviewsModal] = useState(false);
+  const [allReviews, setAllReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [currentReviewPage, setCurrentReviewPage] = useState(1);
+  const [reviewSort, setReviewSort] = useState('date');
+  const [reviewFilter, setReviewFilter] = useState('all');
+  const reviewsPerPage = 10;
+  const [reviewsPagination, setReviewsPagination] = useState(null);
   const [swapData, setSwapData] = useState({
     requestedSkill: { name: '', description: '' },
     offeredSkill: { name: '', description: '' },
@@ -39,6 +50,62 @@ const UserProfile = () => {
       setLoading(false);
     }
   }, [id, navigate]);
+
+  const fetchAllReviews = useCallback(async () => {
+    try {
+      setReviewsLoading(true);
+      const params = new URLSearchParams({
+        page: currentReviewPage,
+        limit: reviewsPerPage,
+        sort: reviewSort
+      });
+      const response = await axios.get(`/api/users/${id}/reviews?${params}`);
+      setAllReviews(response.data.reviews);
+      setReviewsPagination(response.data.pagination);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      toast.error('Failed to load reviews');
+    } finally {
+      setReviewsLoading(false);
+    }
+  }, [id, currentReviewPage, reviewSort]);
+
+  const openAllReviewsModal = async () => {
+    setShowAllReviewsModal(true);
+    setCurrentReviewPage(1);
+    setReviewSort('date');
+    setReviewFilter('all');
+    await fetchAllReviews();
+  };
+
+  const closeAllReviewsModal = () => {
+    setShowAllReviewsModal(false);
+    setAllReviews([]);
+    setReviewsPagination(null);
+  };
+
+  const handleReviewSortChange = async (newSort) => {
+    setReviewSort(newSort);
+    setCurrentReviewPage(1);
+    await fetchAllReviews();
+  };
+
+  const handleReviewFilterChange = async (newFilter) => {
+    setReviewFilter(newFilter);
+    setCurrentReviewPage(1);
+    await fetchAllReviews();
+  };
+
+  const filteredReviews = allReviews.filter(review => {
+    if (reviewFilter === 'all') return true;
+    if (reviewFilter === '5star') return review.rating === 5;
+    if (reviewFilter === '4star') return review.rating === 4;
+    if (reviewFilter === '3star') return review.rating === 3;
+    if (reviewFilter === '2star') return review.rating === 2;
+    if (reviewFilter === '1star') return review.rating === 1;
+    if (reviewFilter === 'withComments') return review.comment && review.comment.trim().length > 0;
+    return true;
+  });
 
   useEffect(() => {
     fetchUser();
@@ -109,12 +176,12 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="main-card mt-10">
+    <div className="min-h-screen flex flex-col items-center bg-white pt-8 px-2 animate-fade-in">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 w-full max-w-4xl">
         <button
           onClick={() => navigate('/browse')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center text-brand-mauve hover:text-brand-plum mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Browse
@@ -144,11 +211,44 @@ const UserProfile = () => {
                   {user.location}
                 </p>
               )}
-              {user.rating && typeof user.rating.average === 'number' && user.rating.count > 0 ? (
-                <div className="flex items-center mt-2">
-                  {renderStars(user.rating.average)}
-                  <span className="ml-2 font-bold text-[#7B466A]">{user.rating.average.toFixed(1)}/5</span>
-                  <span className="ml-1 text-xs text-gray-500">({user.rating.count})</span>
+              {typeof user.ratingAverage === 'number' && user.ratingCount > 0 ? (
+                <div className="flex flex-col mt-2">
+                  <div className="flex items-center">
+                    {renderStars(user.ratingAverage)}
+                    <span className="ml-2 font-bold text-[#7B466A]">{user.ratingAverage.toFixed(1)}/5</span>
+                    <span className="ml-1 text-xs text-gray-500">({user.ratingCount})</span>
+                  </div>
+                  {/* Recent reviews list */}
+                  {user.recentReviews && user.recentReviews.length > 0 && (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-md font-semibold text-gray-800">Recent Reviews</h3>
+                        {user.ratingCount > 3 && (
+                          <button
+                            onClick={openAllReviewsModal}
+                            className="text-sm text-brand-plum hover:text-brand-mauve font-semibold"
+                          >
+                            View All ({user.ratingCount})
+                          </button>
+                        )}
+                      </div>
+                      {user.recentReviews.map((review, i) => (
+                        <div key={i} className="mb-3 p-3 bg-gray-50 rounded shadow-sm border border-gray-100">
+                          <div className="flex items-center gap-2 mb-1">
+                            {review.reviewer && review.reviewer.profilePhoto ? (
+                              <img src={review.reviewer.profilePhoto} alt={review.reviewer.name} className="w-7 h-7 rounded-full object-cover" />
+                            ) : (
+                              <span className="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-700">{review.reviewer && review.reviewer.name ? review.reviewer.name.charAt(0).toUpperCase() : '?'}</span>
+                            )}
+                            <span className="font-semibold text-xs text-brand-plum">{review.reviewer && review.reviewer.name}</span>
+                            <span className="text-xs text-yellow-600 font-bold">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                            <span className="text-xs text-gray-400 ml-2">{new Date(review.date).toLocaleDateString()}</span>
+                          </div>
+                          {review.comment && <div className="text-xs text-gray-700 italic">"{review.comment}"</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 text-gray-500 font-semibold text-sm shadow mt-2">
@@ -326,6 +426,123 @@ const UserProfile = () => {
               >
                 Send Request
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* All Reviews Modal */}
+      {showAllReviewsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-brand-plum">All Reviews for {user.name}</h2>
+              <button
+                onClick={closeAllReviewsModal}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            
+            {/* Filter and Sort Controls */}
+            <div className="p-4 border-b border-gray-200 bg-gray-50">
+              <div className="flex flex-wrap gap-4 items-center">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sort by:</label>
+                  <select
+                    value={reviewSort}
+                    onChange={(e) => handleReviewSortChange(e.target.value)}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                  >
+                    <option value="date">Date (Newest)</option>
+                    <option value="rating">Rating (Highest)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Filter:</label>
+                  <select
+                    value={reviewFilter}
+                    onChange={(e) => handleReviewFilterChange(e.target.value)}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                  >
+                    <option value="all">All Reviews</option>
+                    <option value="5star">5 Stars</option>
+                    <option value="4star">4 Stars</option>
+                    <option value="3star">3 Stars</option>
+                    <option value="2star">2 Stars</option>
+                    <option value="1star">1 Star</option>
+                    <option value="withComments">With Comments</option>
+                  </select>
+                </div>
+                {reviewsPagination && (
+                  <div className="text-sm text-gray-600">
+                    Showing {filteredReviews.length} of {reviewsPagination.totalReviews} reviews
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {reviewsLoading ? (
+                <div className="text-center py-8">
+                  <LoadingSpinner size="md" />
+                  <p className="mt-2 text-gray-600">Loading reviews...</p>
+                </div>
+              ) : filteredReviews.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No reviews found</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-4">
+                    {filteredReviews.map((review, i) => (
+                      <div key={i} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="flex items-center gap-3 mb-2">
+                          {review.reviewer && review.reviewer.profilePhoto ? (
+                            <img src={review.reviewer.profilePhoto} alt={review.reviewer.name} className="w-10 h-10 rounded-full object-cover" />
+                          ) : (
+                            <span className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-bold text-gray-700">{review.reviewer && review.reviewer.name ? review.reviewer.name.charAt(0).toUpperCase() : '?'}</span>
+                          )}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-brand-plum">{review.reviewer && review.reviewer.name}</span>
+                              <span className="text-yellow-600 font-bold">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                              <span className="text-sm text-gray-400">{new Date(review.date).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                        {review.comment && (
+                          <div className="text-gray-700 italic">"{review.comment}"</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Pagination */}
+                  {reviewsPagination && reviewsPagination.totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                      <button
+                        onClick={() => setCurrentReviewPage(p => Math.max(1, p - 1))}
+                        disabled={!reviewsPagination.hasPrevPage}
+                        className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <span className="text-sm text-gray-600">
+                        Page {reviewsPagination.currentPage} of {reviewsPagination.totalPages}
+                      </span>
+                      <button
+                        onClick={() => setCurrentReviewPage(p => Math.min(reviewsPagination.totalPages, p + 1))}
+                        disabled={!reviewsPagination.hasNextPage}
+                        className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -26,13 +26,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-6 px-2">
+    <div className="min-h-screen flex items-center justify-center bg-white py-6 px-2">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col md:flex-row overflow-hidden scale-105">
         {/* Left: Form */}
         <div className="flex-1 flex flex-col justify-center px-8 py-8">
           <div className="mb-6">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-1 tracking-tight">Login</h2>
-            <p className="text-gray-600 text-base mb-6">Welcome! Please log in to your account.</p>
+            <h2 className="text-3xl font-extrabold text-brand-plum mb-1 tracking-tight">Login</h2>
+            <p className="text-brand-orchid text-base mb-6">Welcome! Please log in to your account.</p>
           </div>
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-3">

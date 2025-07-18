@@ -13,6 +13,9 @@ const skillRoutes = require('./routes/skills');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Fix: Trust proxy for rate limiting (prevents X-Forwarded-For warning)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 

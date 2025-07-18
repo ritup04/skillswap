@@ -150,8 +150,8 @@ const SwapDetail = () => {
   const isRequester = swap?.requester._id === currentUser?._id;
   const isRecipient = swap?.recipient._id === currentUser?._id;
   const canRate = swap?.status === 'completed' && 
-    ((isRequester && !swap.requesterRating.rating) || 
-     (isRecipient && !swap.recipientRating.rating));
+    ((isRequester && swap?.requesterRating && !swap.requesterRating.rating) || 
+     (isRecipient && swap?.recipientRating && !swap.recipientRating.rating));
 
   if (loading) {
     return <LoadingSpinner size="lg" className="py-20" />;
@@ -166,19 +166,18 @@ const SwapDetail = () => {
   }
 
   return (
-    <div className="main-card mt-10">
+    <div className="min-h-screen flex flex-col items-center bg-white pt-8 px-2 animate-fade-in">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-8 w-full max-w-4xl">
         <button
           onClick={() => navigate('/swaps')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+          className="flex items-center text-brand-mauve hover:text-brand-plum mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to My Swaps
         </button>
-        
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Swap Details</h1>
+          <h1 className="text-3xl font-bold text-brand-plum">Swap Details</h1>
           {getStatusBadge(swap.status)}
         </div>
       </div>
@@ -270,7 +269,7 @@ const SwapDetail = () => {
         <div className="card mb-8">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">Ratings</h3>
           <div className="space-y-4">
-            {swap.requesterRating && swap.requesterRating.rating && (
+            {swap.requesterRating && swap.requesterRating.rating && swap.requester && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-gray-900">
@@ -288,7 +287,7 @@ const SwapDetail = () => {
                 </p>
               </div>
             )}
-            {swap.recipientRating && swap.recipientRating.rating && (
+            {swap.recipientRating && swap.recipientRating.rating && swap.recipient && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-gray-900">

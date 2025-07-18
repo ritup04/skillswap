@@ -115,43 +115,61 @@ const Browse = () => {
     }
   };
 
+  // Add a renderStars function for displaying stars
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<svg key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>);
+    }
+    if (hasHalfStar) {
+      stars.push(<svg key="half" className="w-4 h-4 fill-yellow-400 text-yellow-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>);
+    }
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<svg key={`empty-${i}`} className="w-4 h-4 text-gray-300" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>);
+    }
+    return stars;
+  };
+
   if (loading) {
     return <LoadingSpinner size="lg" className="py-20" />;
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center pt-8 pb-16 px-2">
+    <div className="min-h-screen flex flex-col items-center bg-white pt-8 px-2 animate-fade-in">
       <div className="w-full max-w-6xl flex flex-col items-start mb-8 mt-4">
-        <h1 className="text-4xl font-bold text-[#0C0420] mb-2">Browse Skills</h1>
-        <p className="text-lg text-[#5D3C64]">Find people with the skills you want to learn</p>
+        <h1 className="text-4xl font-extrabold text-brand-plum mb-2 drop-shadow-lg">Browse Skills</h1>
+        <p className="text-lg text-brand-orchid">Find people with the skills you want to learn</p>
       </div>
 
       {/* Search and Filters */}
-      <div className="w-full max-w-6xl mb-10 bg-white/80 rounded-2xl shadow-lg border-2 border-[#9F6496] p-8 flex flex-col gap-6">
+      <div className="w-full max-w-6xl mb-10 bg-white rounded-3xl shadow-card-lg border border-brand-plum/30 p-8 flex flex-col gap-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9F6496] w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-brand-mauve w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search for skills (e.g., Photoshop, JavaScript, Guitar)"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-10 py-3 rounded-lg border border-[#7B466A] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white text-[#0C0420] placeholder-[#9F6496] shadow"
+                className="w-full px-10 py-3 rounded-lg border border-brand-plum focus:ring-2 focus:ring-brand-orchid outline-none bg-white text-brand-plum placeholder-brand-mauve shadow"
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-5 py-3 rounded-lg bg-[#D391B0] text-[#0C0420] font-semibold shadow hover:bg-[#BA6E8F] transition-colors lg:w-auto"
+            className="flex items-center gap-2 px-5 py-3 rounded-full bg-brand-mauve text-white font-semibold shadow-card hover:bg-brand-orchid transition-colors lg:w-auto"
           >
             <Filter className="w-4 h-4 mr-2" />
             Filters
           </button>
           <button
             onClick={handleSearch}
-            className="flex items-center gap-2 px-5 py-3 rounded-lg bg-[#7B466A] text-white font-semibold shadow hover:bg-[#5D3C64] transition-colors lg:w-auto"
+            className="flex items-center gap-2 px-5 py-3 rounded-full bg-brand-plum text-white font-semibold shadow-card hover:bg-brand-mauve transition-colors lg:w-auto"
           >
             <Search className="w-4 h-4 mr-2" />
             Search
@@ -160,34 +178,33 @@ const Browse = () => {
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className="mt-6 pt-6 border-t border-[#D391B0]">
+          <div className="mt-6 pt-6 border-t border-brand-orchid">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#7B466A] mb-1">
+                <label className="block text-sm font-medium text-brand-plum mb-1">
                   Location
                 </label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9F6496] w-4 h-4" />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-brand-mauve w-4 h-4" />
                   <input
                     type="text"
                     placeholder="Enter location"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full px-10 py-2 rounded-lg border border-[#7B466A] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white text-[#0C0420] placeholder-[#9F6496] shadow"
+                    className="w-full px-10 py-2 rounded-lg border border-brand-plum focus:ring-2 focus:ring-brand-orchid outline-none bg-white text-brand-plum placeholder-brand-mauve shadow"
                   />
                 </div>
               </div>
-              
               <div>
-                <label className="block text-sm font-medium text-[#7B466A] mb-1">
+                <label className="block text-sm font-medium text-brand-plum mb-1">
                   Availability
                 </label>
                 <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9F6496] w-4 h-4" />
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-brand-mauve w-4 h-4" />
                   <select
                     value={availability}
                     onChange={(e) => setAvailability(e.target.value)}
-                    className="w-full px-10 py-2 rounded-lg border border-[#7B466A] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white text-[#0C0420] shadow"
+                    className="w-full px-10 py-2 rounded-lg border border-brand-plum focus:ring-2 focus:ring-brand-orchid outline-none bg-white text-brand-plum shadow"
                   >
                     <option value="">Any availability</option>
                     <option value="weekdays">Weekdays</option>
@@ -198,11 +215,10 @@ const Browse = () => {
                 </div>
               </div>
             </div>
-            
             <div className="mt-4 flex justify-between items-center">
               <button
                 onClick={clearFilters}
-                className="text-sm text-[#7B466A] hover:text-[#0C0420] flex items-center"
+                className="text-sm text-brand-plum hover:text-brand-orchid flex items-center"
               >
                 <X className="w-4 h-4 mr-1" />
                 Clear filters
@@ -215,22 +231,26 @@ const Browse = () => {
       {/* User Cards */}
       <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
         {publicUsers.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-neutral-400 text-lg">No users found</p>
+          <div className="text-center py-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <p className="text-brand-orchid text-lg">No users found</p>
           </div>
         ) : (
-          paginatedUsers.map((user) => (
-            <div key={user._id} className="w-full bg-white/80 rounded-2xl shadow-lg border-2 border-[#D391B0] p-8 flex flex-row items-center gap-8 hover:shadow-2xl transition-shadow mx-auto relative">
+          paginatedUsers.map((user, idx) => (
+            <div
+              key={user._id}
+              className="w-full bg-white rounded-2xl shadow-card-lg border border-brand-orchid p-8 flex flex-row items-center gap-8 hover:shadow-2xl transition-shadow mx-auto relative group hover:scale-[1.02] transition-transform duration-200 animate-slide-up"
+              style={{ animationDelay: `${0.15 + idx * 0.07}s` }}
+            >
               {/* Left: Profile photo */}
               <div className="flex-shrink-0 flex flex-col items-center justify-center">
                 {user.profilePhoto ? (
                   <img
                     src={user.profilePhoto}
                     alt={user.name}
-                    className="w-28 h-28 rounded-full object-cover border-4 border-[#7B466A] shadow-lg"
+                    className="w-28 h-28 rounded-full object-cover border-4 border-brand-plum shadow-lg"
                   />
                 ) : (
-                  <div className="w-28 h-28 bg-[#7B466A] rounded-full flex items-center justify-center text-5xl text-white font-bold shadow-lg border-4 border-[#7B466A]">
+                  <div className="w-28 h-28 bg-brand-plum rounded-full flex items-center justify-center text-5xl text-white font-bold shadow-lg border-4 border-brand-plum">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -238,9 +258,9 @@ const Browse = () => {
               {/* Center: Info */}
               <div className="flex-1 flex flex-col justify-center min-w-0">
                 <div className="flex items-center gap-4 flex-wrap">
-                  <h2 className="text-2xl font-bold text-[#0C0420] whitespace-nowrap">{user.name}</h2>
+                  <h2 className="text-2xl font-bold text-brand-pink whitespace-nowrap">{user.name}</h2>
                   {user.location && (
-                    <div className="text-[#5D3C64] flex items-center">
+                    <div className="text-brand-orchid flex items-center">
                       <MapPin className="w-4 h-4 mr-1" />
                       <span className="truncate">{user.location}</span>
                     </div>
@@ -278,7 +298,7 @@ const Browse = () => {
                     </span>
                   </div>
                 </div>
-                <div className="mt-3 flex items-center text-sm text-[#5D3C64]">
+                <div className="mt-3 flex items-center text-sm text-brand-orchid">
                   <Clock className="w-4 h-4 mr-1" />
                   <span>{getAvailabilityText(user)}</span>
                 </div>
@@ -287,24 +307,43 @@ const Browse = () => {
               <div className="flex flex-col items-end justify-between h-full min-w-[160px] gap-4">
                 {currentUser && user._id !== currentUser._id && (
                   <button
-                    className="px-7 py-3 rounded-lg bg-[#7B466A] text-white font-bold shadow hover:bg-[#5D3C64] transition-colors text-lg"
+                    className="px-7 py-3 rounded-lg bg-brand-plum text-white font-bold shadow hover:bg-brand-mauve transition-colors text-lg"
                     onClick={() => openSwapModal(user)}
                   >
                     Request Swap
                   </button>
                 )}
                 <div className="text-right mt-4">
-                  {user.rating && typeof user.rating.average === 'number' && user.rating.count > 0 ? (
+                  {typeof user.ratingAverage === 'number' && user.ratingCount > 0 ? (
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-bold text-sm shadow">
-                      <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>
-                      {user.rating.average.toFixed(1)}/5
-                      <span className="ml-1 text-xs text-gray-500">({user.rating.count})</span>
+                      {renderStars(user.ratingAverage)}
+                      {user.ratingAverage.toFixed(1)}/5
+                      <span className="ml-1 text-xs text-gray-500">({user.ratingCount})</span>
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 text-gray-500 font-semibold text-sm shadow">
-                      <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>
                       Not yet rated
                     </span>
+                  )}
+                  {/* Reviews preview: show all in recentReviews */}
+                  {user.recentReviews && user.recentReviews.length > 0 && (
+                    <div className="mt-2 text-left">
+                      {user.recentReviews.map((review, i) => (
+                        <div key={i} className="mb-2 p-2 bg-gray-50 rounded shadow-sm border border-gray-100">
+                          <div className="flex items-center gap-2 mb-1">
+                            {review.reviewer && review.reviewer.profilePhoto ? (
+                              <img src={review.reviewer.profilePhoto} alt={review.reviewer.name} className="w-6 h-6 rounded-full object-cover" />
+                            ) : (
+                              <span className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-700">{review.reviewer && review.reviewer.name ? review.reviewer.name.charAt(0).toUpperCase() : '?'}</span>
+                            )}
+                            <span className="font-semibold text-xs text-brand-plum">{review.reviewer && review.reviewer.name}</span>
+                            <span className="text-xs text-yellow-600 font-bold">{renderStars(review.rating)}</span>
+                            <span className="text-xs text-gray-400 ml-2">{new Date(review.date).toLocaleDateString()}</span>
+                          </div>
+                          {review.comment && <div className="text-xs text-gray-700 italic">"{review.comment}"</div>}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
@@ -316,15 +355,15 @@ const Browse = () => {
       {showSwapModal && swapTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md animate-fade-in">
-            <h2 className="text-xl font-bold text-[#7B466A] mb-4">Request Swap with {swapTarget.name}</h2>
+            <h2 className="text-xl font-bold text-brand-plum mb-4">Request Swap with {swapTarget.name}</h2>
             <form
               onSubmit={e => { e.preventDefault(); handleSendSwap(); }}
               className="space-y-4"
             >
               <div>
-                <label className="block text-[#7B466A] font-semibold mb-1">Choose one of your offered skills</label>
+                <label className="block text-brand-plum font-semibold mb-1">Choose one of your offered skills</label>
                 <select
-                  className="w-full px-4 py-2 rounded-lg border border-[#D391B0] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white/80"
+                  className="w-full px-4 py-2 rounded-lg border border-brand-orchid focus:ring-2 focus:ring-brand-pink outline-none bg-white/80"
                   value={mySkill}
                   onChange={e => setMySkill(e.target.value)}
                   required
@@ -336,9 +375,9 @@ const Browse = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-[#9F6496] font-semibold mb-1">Choose one of their offered skills</label>
+                <label className="block text-brand-orchid font-semibold mb-1">Choose one of their offered skills</label>
                 <select
-                  className="w-full px-4 py-2 rounded-lg border border-[#D391B0] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white/80"
+                  className="w-full px-4 py-2 rounded-lg border border-brand-orchid focus:ring-2 focus:ring-brand-pink outline-none bg-white/80"
                   value={theirSkill}
                   onChange={e => setTheirSkill(e.target.value)}
                   required
@@ -350,9 +389,9 @@ const Browse = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-[#7B466A] font-semibold mb-1">Message</label>
+                <label className="block text-brand-plum font-semibold mb-1">Message</label>
                 <textarea
-                  className="w-full px-4 py-2 rounded-lg border border-[#D391B0] focus:ring-2 focus:ring-[#D391B0] outline-none bg-white/80"
+                  className="w-full px-4 py-2 rounded-lg border border-brand-orchid focus:ring-2 focus:ring-brand-pink outline-none bg-white/80"
                   value={swapMessage}
                   onChange={e => setSwapMessage(e.target.value)}
                   rows={3}
@@ -362,14 +401,14 @@ const Browse = () => {
               <div className="flex gap-4 mt-6">
                 <button
                   type="submit"
-                  className="bg-[#7B466A] text-white font-bold px-6 py-2 rounded-lg shadow hover:bg-[#5D3C64] transition-colors disabled:opacity-60"
+                  className="bg-brand-plum text-white font-bold px-6 py-2 rounded-lg shadow hover:bg-brand-mauve transition-colors disabled:opacity-60"
                   disabled={swapLoading}
                 >
                   {swapLoading ? 'Sending...' : 'Submit'}
                 </button>
                 <button
                   type="button"
-                  className="bg-white/80 text-[#7B466A] font-bold px-6 py-2 rounded-lg border border-[#D391B0] shadow hover:bg-[#D391B0]/30 transition-colors"
+                  className="bg-white/80 text-brand-plum font-bold px-6 py-2 rounded-lg border border-brand-orchid shadow hover:bg-brand-orchid/30 transition-colors"
                   onClick={closeSwapModal}
                   disabled={swapLoading}
                 >
@@ -385,7 +424,7 @@ const Browse = () => {
         <div className="w-full max-w-6xl flex justify-center mt-8">
           <nav className="flex items-center gap-2">
             <button
-              className="px-3 py-1 rounded bg-[#D391B0] text-white font-bold"
+              className="px-3 py-1 rounded bg-brand-orchid text-white font-bold"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
@@ -394,14 +433,14 @@ const Browse = () => {
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
                 key={page}
-                className={`px-3 py-1 rounded border border-[#D391B0] text-[#7B466A] font-bold hover:bg-[#D391B0] hover:text-white transition-colors ${page === currentPage ? 'bg-[#D391B0] text-white' : ''}`}
+                className={`px-3 py-1 rounded border border-brand-orchid text-brand-plum font-bold hover:bg-brand-orchid hover:text-white transition-colors ${page === currentPage ? 'bg-brand-orchid text-white' : ''}`}
                 onClick={() => setCurrentPage(page)}
               >
                 {page}
               </button>
             ))}
             <button
-              className="px-3 py-1 rounded bg-[#D391B0] text-white font-bold"
+              className="px-3 py-1 rounded bg-brand-orchid text-white font-bold"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
             >

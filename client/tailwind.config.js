@@ -40,6 +40,15 @@ module.exports = {
           800: '#5b21b6',
           900: '#4c1d95',
         },
+        // Brand palette from user
+        brand: {
+          night: '#0C0420',
+          plum: '#5D3C64',
+          mauve: '#7B466A',
+          orchid: '#9F6496',
+          pink: '#D391B0',
+          blush: '#BA6E8F',
+        },
         beige: {
           50: '#fdf6ee',
           100: '#f7ecd9',
